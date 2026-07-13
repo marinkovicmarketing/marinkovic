@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getFreeTips } from "@/lib/data";
+import { getFreeTips, getSpecialTip } from "@/lib/data";
 import { TipCard } from "@/components/TipCard";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const freeTips = await getFreeTips();
+  const [freeTips, specialTip] = await Promise.all([getFreeTips(), getSpecialTip()]);
 
   return (
     <div className="space-y-10">
@@ -23,6 +23,27 @@ export default async function Home() {
           Vidi VIP tipove (kvota 3 / 7 / 15 / 20-30)
         </Link>
       </section>
+
+      {specialTip && (
+        <section>
+          <Link
+            href="/vip"
+            className="block rounded-xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-neutral-900 p-5 transition hover:border-amber-500/70"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-bold text-amber-400">🌟 Specijal tip dana</p>
+              <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-neutral-950">
+                VIP
+              </span>
+            </div>
+            <p className="mt-2 font-semibold blur-[3px] select-none">
+              {specialTip.match.homeTeam} — {specialTip.match.awayTeam}: {specialTip.market} @{" "}
+              {specialTip.odds.toFixed(2)}
+            </p>
+            <p className="mt-2 text-sm text-amber-300">Otključaj sa VIP pristupom →</p>
+          </Link>
+        </section>
+      )}
 
       <section>
         <h2 className="mb-4 text-xl font-bold">Današnji besplatni tipovi</h2>

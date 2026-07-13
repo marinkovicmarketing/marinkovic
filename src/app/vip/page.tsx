@@ -1,4 +1,4 @@
-import { getVipTickets, tierLabel } from "@/lib/data";
+import { getVipTickets, getSpecialTip, tierLabel } from "@/lib/data";
 import { hasVipAccess } from "./actions";
 import { UnlockForm } from "./UnlockForm";
 import type { TicketTier } from "@/generated/prisma";
@@ -41,12 +41,35 @@ export default async function VipPage() {
     );
   }
 
-  const tickets = await getVipTickets();
+  const [tickets, specialTip] = await Promise.all([getVipTickets(), getSpecialTip()]);
   const byTier = new Map(tickets.map((t) => [t.tier, t]));
 
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-extrabold">VIP tipovi za danas</h1>
+
+      {specialTip && (
+        <section className="rounded-xl border border-amber-500/50 bg-gradient-to-br from-amber-500/10 to-neutral-900 p-5">
+          <p className="text-sm font-bold text-amber-400">🌟 Specijal tip dana</p>
+          <p className="mt-2 text-lg font-semibold">
+            {specialTip.match.homeTeam} — {specialTip.match.awayTeam}{" "}
+            <span className="text-neutral-500 text-sm">({specialTip.match.league})</span>
+          </p>
+          <div className="mt-3 flex items-center justify-between rounded-lg bg-neutral-800 px-3 py-2">
+            <div>
+              <p className="text-xs text-neutral-400">{specialTip.market}</p>
+              <p className="font-bold text-amber-400">{specialTip.pick}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-neutral-400">Kvota</p>
+              <p className="font-bold">{specialTip.odds.toFixed(2)}</p>
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-neutral-300">{specialTip.reasoning}</p>
+          <p className="mt-2 text-xs text-neutral-500">Pouzdanost AI procene: {specialTip.confidence}%</p>
+        </section>
+      )}
+
       {tickets.length === 0 && (
         <p className="rounded-xl border border-neutral-800 bg-neutral-900 p-6 text-center text-neutral-400">
           VIP tiketi za danas još nisu generisani. Vrati se malo kasnije.

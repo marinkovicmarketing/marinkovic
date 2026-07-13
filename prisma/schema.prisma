@@ -33,6 +33,7 @@ model Tip {
   confidence Int // 1-100, model's confidence
   reasoning  String
   isFree     Boolean  @default(false)
+  isSpecial  Boolean  @default(false) // the single highest-confidence tip of the day, VIP-exclusive
   slateDate  String // "YYYY-MM-DD" — which daily slate this tip belongs to
   createdAt  DateTime @default(now())
 

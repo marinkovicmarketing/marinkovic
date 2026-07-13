@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { Bot } from "grammy";
 import { prisma } from "@/lib/prisma";
-import { getFreeTips, getVipTickets } from "@/lib/data";
+import { getFreeTips, getVipTickets, getSpecialTip } from "@/lib/data";
 import { formatFreeTips, formatVipTickets } from "@/lib/telegramFormat";
 
 const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
@@ -28,8 +28,8 @@ bot.command("start", async (ctx) => {
 });
 
 bot.command("tipovi", async (ctx) => {
-  const tips = await getFreeTips();
-  await ctx.reply(formatFreeTips(tips), { parse_mode: "Markdown" });
+  const [tips, specialTip] = await Promise.all([getFreeTips(), getSpecialTip()]);
+  await ctx.reply(formatFreeTips(tips, Boolean(specialTip)), { parse_mode: "Markdown" });
 });
 
 bot.command("vip", async (ctx) => {
@@ -46,8 +46,8 @@ bot.command("vip", async (ctx) => {
     return;
   }
 
-  const tickets = await getVipTickets();
-  await ctx.reply(formatVipTickets(tickets), { parse_mode: "Markdown" });
+  const [tickets, specialTip] = await Promise.all([getVipTickets(), getSpecialTip()]);
+  await ctx.reply(formatVipTickets(tickets, specialTip), { parse_mode: "Markdown" });
 });
 
 bot.command("vipkod", async (ctx) => {

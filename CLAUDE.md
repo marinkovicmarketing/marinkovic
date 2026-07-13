@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-An AI-generated football (soccer) tips service: a Next.js site that publishes 3 free daily tips
-and VIP parlay tickets targeting specific combined odds (kvota 3 / 7 / 15 / 20-30), plus a Telegram
-bot that delivers the same content. Tips are produced by a script that pulls fixtures/form from
-API-Football and asks Claude to propose picks; there is no real-money payment integration yet —
-VIP access is gated by a shared access code (`VIP_ACCESS_CODE`) shared manually with customers.
+An AI-generated football (soccer) tips service: a Next.js site that publishes 3 free daily tips,
+one VIP-exclusive "Specijal" tip (the day's single highest-confidence pick), and VIP parlay tickets
+targeting specific combined odds (kvota 3 / 7 / 15 / 20-30), plus a Telegram bot that delivers the
+same content. Tips are produced by a script that pulls fixtures/form from API-Football and asks
+Claude to propose picks; there is no real-money payment integration yet — VIP access is gated by a
+shared access code (`VIP_ACCESS_CODE`) shared manually with customers.
 
 ## Development commands
 
@@ -37,12 +38,14 @@ Required environment variables live in `.env` (see `.env` for the current placeh
 **Data flow:** `scripts/generate-tips.ts` is the only thing that writes tip data. It fetches
 today's fixtures (`src/lib/football.ts`, API-Football, mock fallback when no key is set), asks
 Claude for structured tip candidates (`src/lib/generateTips.ts`, `output_config.format` json_schema
-on `claude-opus-4-8`), saves them as `Tip` rows keyed by `slateDate` (`YYYY-MM-DD`, Europe/Belgrade),
-marks the top 3 by confidence as free, then greedily combines tips into `Ticket` rows per kvota
-tier (`src/lib/tickets.ts` — `TIERS` defines the target odds ranges). Re-running the script for the
-same day wipes and regenerates that day's data (idempotent).
+on `claude-opus-4-8`), saves them as `Tip` rows keyed by `slateDate` (`YYYY-MM-DD`, Europe/Belgrade).
+Sorted by confidence: tip #0 is marked `isSpecial` (the VIP-exclusive "Specijal" pick), #1-3 are
+marked `isFree`, the rest exist only to fill out tickets. All tips (regardless of flags) are then
+greedily combined into `Ticket` rows per kvota tier (`src/lib/tickets.ts` — `TIERS` defines the
+target odds ranges). Re-running the script for the same day wipes and regenerates that day's data
+(idempotent).
 
-**Two read surfaces share one data layer** (`src/lib/data.ts`: `getFreeTips`, `getVipTickets`):
+**Two read surfaces share one data layer** (`src/lib/data.ts`: `getFreeTips`, `getSpecialTip`, `getVipTickets`):
 - Web (`src/app/page.tsx`, `src/app/vip/page.tsx`) — Next.js App Router, Server Components, Prisma
   queried directly (no API routes for reads).
 - Telegram bot (`scripts/bot.ts`) — a separate long-running process (grammy), formats the same

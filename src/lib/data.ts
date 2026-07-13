@@ -9,6 +9,13 @@ export async function getFreeTips(slateDate = todaySlateDate()) {
   });
 }
 
+export async function getSpecialTip(slateDate = todaySlateDate()) {
+  return prisma.tip.findFirst({
+    where: { slateDate, isSpecial: true },
+    include: { match: true },
+  });
+}
+
 export async function getVipTickets(slateDate = todaySlateDate()) {
   return prisma.ticket.findMany({
     where: { slateDate },

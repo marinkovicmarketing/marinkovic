@@ -57,8 +57,11 @@ async function main() {
     matchByIndex.set(i, match.id);
   }
 
+  // Sorted by confidence: #0 is the "Specijal" tip (VIP-exclusive, our single best
+  // pick of the day), #1-3 are the free teaser tips, the rest only appear in tickets.
   const sorted = [...generated].sort((a, b) => b.confidence - a.confidence);
-  const freeCount = 3;
+  const freeStart = 1;
+  const freeEnd = 4;
 
   const savedTips: { id: string; odds: number; confidence: number }[] = [];
   for (const [i, tip] of sorted.entries()) {
@@ -72,13 +75,15 @@ async function main() {
         odds: tip.estimatedOdds,
         confidence: tip.confidence,
         reasoning: tip.reasoning,
-        isFree: i < freeCount,
+        isSpecial: i === 0,
+        isFree: i >= freeStart && i < freeEnd,
         slateDate,
       },
     });
     savedTips.push({ id: saved.id, odds: saved.odds, confidence: saved.confidence });
   }
-  console.log(`Sačuvano ${savedTips.length} tipova (${Math.min(freeCount, savedTips.length)} besplatna).`);
+  const freeSaved = Math.max(0, Math.min(freeEnd, savedTips.length) - freeStart);
+  console.log(`Sačuvano ${savedTips.length} tipova (1 specijal, ${freeSaved} besplatna).`);
 
   let ticketsCreated = 0;
   for (const { tier, min, max } of TIERS) {
