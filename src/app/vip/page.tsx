@@ -36,7 +36,7 @@ export default async function VipPage() {
           ))}
         </div>
 
-        {(paypalUrl || contactHref) && (
+        {(paypalRaw || contactHref) && (
           <div className="mt-8 rounded-xl border border-neutral-800 bg-neutral-900 p-5 text-left">
             <p className="text-sm font-bold text-emerald-400">So bekommst du VIP-Zugang</p>
             <ol className="mt-3 space-y-2 text-sm text-neutral-300">
@@ -47,7 +47,7 @@ export default async function VipPage() {
                     {paypalRaw}
                   </a>
                 ) : (
-                  <span className="font-semibold">unserem PayPal</span>
+                  <span className="font-semibold">{paypalRaw ?? "unserem PayPal"}</span>
                 )}
                 .
               </li>

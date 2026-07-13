@@ -2,7 +2,11 @@
 export function getPaymentInfo() {
   const price = process.env.VIP_PRICE?.trim() || null;
   const paypalRaw = process.env.VIP_PAYPAL_LINK?.trim() || null;
-  const paypalUrl = paypalRaw ? (paypalRaw.startsWith("http") ? paypalRaw : `https://${paypalRaw}`) : null;
+  // A PayPal.me link/URL can be a clickable "pay now" button. A plain email address
+  // can't — PayPal has no reliable universal link for "send money to this email" — so
+  // show it as text to copy instead of a (broken) link.
+  const isEmail = paypalRaw?.includes("@") ?? false;
+  const paypalUrl = paypalRaw && !isEmail ? (paypalRaw.startsWith("http") ? paypalRaw : `https://${paypalRaw}`) : null;
   const contactTelegram = process.env.VIP_CONTACT_TELEGRAM?.trim() || null;
 
   return { price, paypalRaw, paypalUrl, contactTelegram };
