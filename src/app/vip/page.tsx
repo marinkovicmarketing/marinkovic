@@ -1,4 +1,5 @@
 import { getVipTickets, getSpecialTip, tierLabel } from "@/lib/data";
+import { getPaymentInfo } from "@/lib/payment";
 import { hasVipAccess } from "./actions";
 import { UnlockForm } from "./UnlockForm";
 import type { TicketTier } from "@/generated/prisma";
@@ -11,6 +12,9 @@ export default async function VipPage() {
   const unlocked = await hasVipAccess();
 
   if (!unlocked) {
+    const { price, paypalUrl, paypalRaw, contactTelegram } = getPaymentInfo();
+    const contactHref = contactTelegram ? `https://t.me/${contactTelegram.replace(/^@/, "")}` : null;
+
     return (
       <div className="mx-auto max-w-lg text-center">
         <h1 className="text-3xl font-extrabold">VIP-Tipps</h1>
@@ -32,11 +36,51 @@ export default async function VipPage() {
           ))}
         </div>
 
+        {(paypalUrl || contactHref) && (
+          <div className="mt-8 rounded-xl border border-neutral-800 bg-neutral-900 p-5 text-left">
+            <p className="text-sm font-bold text-emerald-400">So bekommst du VIP-Zugang</p>
+            <ol className="mt-3 space-y-2 text-sm text-neutral-300">
+              <li>
+                1. Bezahle {price ?? "den VIP-Betrag"} per PayPal an{" "}
+                {paypalUrl ? (
+                  <a href={paypalUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-emerald-400 underline">
+                    {paypalRaw}
+                  </a>
+                ) : (
+                  <span className="font-semibold">unserem PayPal</span>
+                )}
+                .
+              </li>
+              <li>
+                2. Schick uns den Zahlungsbeleg (Screenshot) auf Telegram
+                {contactHref ? (
+                  <>
+                    {" "}
+                    an{" "}
+                    <a href={contactHref} target="_blank" rel="noopener noreferrer" className="font-semibold text-emerald-400 underline">
+                      {contactTelegram}
+                    </a>
+                  </>
+                ) : null}
+                .
+              </li>
+              <li>3. Wir schicken dir deinen persönlichen VIP-Code zurück.</li>
+              <li>4. Gib den Code unten ein und schon bist du drin.</li>
+            </ol>
+          </div>
+        )}
+
         <UnlockForm />
 
         <p className="mt-6 text-sm text-neutral-500">
-          Kein VIP-Code? Melde dich bei uns auf Telegram, um den Zugang zu vereinbaren — die Zahlung auf der
-          Website kommt bald.
+          Hast du schon bezahlt, aber noch keinen Code?{" "}
+          {contactHref ? (
+            <a href={contactHref} target="_blank" rel="noopener noreferrer" className="underline">
+              Melde dich auf Telegram
+            </a>
+          ) : (
+            "Melde dich bei uns auf Telegram."
+          )}
         </p>
       </div>
     );

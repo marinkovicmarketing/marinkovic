@@ -14,6 +14,16 @@ npm run dev              # http://localhost:3000
 
 VIP stranicu otključavaš kodom iz `VIP_ACCESS_CODE` (podrazumevano `promeni-me` — obavezno promeni pre nego što bude javno dostupno).
 
+### Naplata (ručno, preko PayPal-a)
+
+Dok ne budeš legalno spreman za automatsku naplatu (Stripe i sl.), sajt i bot pokazuju uputstvo za ručnu uplatu preko PayPal-a. Popuni u `.env`:
+
+- `VIP_PRICE` — npr. `9,99 €/Monat`
+- `VIP_PAYPAL_LINK` — tvoj pravi `paypal.me/...` link ili email
+- `VIP_CONTACT_TELEGRAM` — tvoj Telegram korisnički handle (npr. `@nadimak`) gde ti korisnici šalju potvrdu uplate
+
+Kad ti neko pošalje potvrdu uplate na Telegram, ti ručno pošalješ nazad trenutnu vrednost `VIP_ACCESS_CODE` — to je isti kod za sve, pa ga povremeno menjaj ako želiš kontrolu ko ima pristup.
+
 ## Telegram bot
 
 ```bash
@@ -33,7 +43,8 @@ Napomena: sadržaj koji vidi korisnik (sajt + bot poruke) je na nemačkom (targe
 - ✅ Web (Next.js) + Telegram bot
 - ✅ AI generisanje tipova (Claude API)
 - ✅ VIP pristup preko deljenog koda (privremeno rešenje)
-- ⬜ Plaćanje VIP pretplate (nije implementirano)
+- ✅ Ručna naplata preko PayPal-a (uputstvo na sajtu + botu, ti ručno šalješ kod)
+- ⬜ Automatska naplata (Stripe i sl. — čeka se prijava firme u Austriji)
 - ⬜ Automatsko dnevno pokretanje `generate:tips` (nije podešeno — treba cron/scheduler)
 
 Detaljnija arhitektura: [`CLAUDE.md`](./CLAUDE.md).

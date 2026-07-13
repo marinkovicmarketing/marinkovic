@@ -3,6 +3,7 @@ import { Bot } from "grammy";
 import { prisma } from "@/lib/prisma";
 import { getFreeTips, getVipTickets, getSpecialTip } from "@/lib/data";
 import { formatFreeTips, formatVipTickets } from "@/lib/telegramFormat";
+import { formatPaymentInstructions } from "@/lib/payment";
 
 const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
 if (!token) {
@@ -38,9 +39,7 @@ bot.command("vip", async (ctx) => {
 
   if (!subscriber?.isVip) {
     await ctx.reply(
-      "🔒 VIP-Tipps sind nur mit Code verfügbar.\n\n" +
-        "Freischalten mit: `/vipcode DEIN_CODE`\n" +
-        "Kein Code? Melde dich bei uns, um den Zugang zu vereinbaren.",
+      `🔒 VIP-Tipps sind nur mit Code verfügbar.\n\n${formatPaymentInstructions()}`,
       { parse_mode: "Markdown" },
     );
     return;
