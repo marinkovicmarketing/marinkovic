@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Match {
+  id            String   @id @default(cuid())
+  apiFootballId Int?     @unique
+  league        String
+  homeTeam      String
+  awayTeam      String
+  kickoff       DateTime
+  createdAt     DateTime @default(now())
+
+  tips Tip[]
+}
+
+model Tip {
+  id         String   @id @default(cuid())
+  match      Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  matchId    String
+  market     String // e.g. "1X2", "Over/Under 2.5", "BTTS"
+  pick       String // e.g. "1", "Over 2.5", "GG"
+  odds       Float
+  confidence Int // 1-100, model's confidence
+  reasoning  String
+  isFree     Boolean  @default(false)
+  slateDate  String // "YYYY-MM-DD" — which daily slate this tip belongs to
+  createdAt  DateTime @default(now())
+
+  ticketTips TicketTip[]
+
+  @@index([slateDate])
+}
+
+enum TicketTier {
+  KVOTA_3
+  KVOTA_7
+  KVOTA_15
+  KVOTA_20_30
+}
+
+model Ticket {
+  id         String     @id @default(cuid())
+  slateDate  String // "YYYY-MM-DD"
+  tier       TicketTier
+  totalOdds  Float
+  createdAt  DateTime   @default(now())
+
+  ticketTips TicketTip[]
+
+  @@index([slateDate])
+}
+
+model TicketTip {
+  id       String @id @default(cuid())
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId String
+  tip      Tip    @relation(fields: [tipId], references: [id], onDelete: Cascade)
+  tipId    String
+
+  @@unique([ticketId, tipId])
+}
+
+model TelegramSubscriber {
+  id        String   @id @default(cuid())
+  chatId    String   @unique
+  username  String?
+  isVip     Boolean  @default(false)
+  joinedAt  DateTime @default(now())
+}
