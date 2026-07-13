@@ -26,7 +26,7 @@ export function TipCard({
       <div className="flex items-center justify-between text-xs text-neutral-400">
         <span>{league}</span>
         <span>
-          {kickoff.toLocaleString("sr-RS", {
+          {kickoff.toLocaleString("de-DE", {
             day: "2-digit",
             month: "2-digit",
             hour: "2-digit",
@@ -43,12 +43,12 @@ export function TipCard({
           <p className="font-bold text-emerald-400">{pick}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-neutral-400">Kvota</p>
+          <p className="text-xs text-neutral-400">Quote</p>
           <p className="font-bold">{odds.toFixed(2)}</p>
         </div>
       </div>
       <p className="mt-2 text-sm text-neutral-300">{reasoning}</p>
-      <p className="mt-2 text-xs text-neutral-500">Pouzdanost AI procene: {confidence}%</p>
+      <p className="mt-2 text-xs text-neutral-500">KI-Vertrauen: {confidence}%</p>
     </div>
   );
 }

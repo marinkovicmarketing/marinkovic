@@ -20,7 +20,9 @@ VIP stranicu otključavaš kodom iz `VIP_ACCESS_CODE` (podrazumevano `promeni-me
 npm run bot
 ```
 
-Komande: `/start`, `/tipovi` (besplatni tipovi), `/vip`, `/vipkod <kod>`.
+Komande: `/start`, `/tipps` (besplatni tipovi), `/vip`, `/vipcode <kod>`.
+
+Napomena: sadržaj koji vidi korisnik (sajt + bot poruke) je na nemačkom (target tržište je Austrija). Ovaj README i log poruke u `scripts/` ostaju na srpskom, to je samo za tebe kao operatera.
 
 ## Generisanje tipova
 

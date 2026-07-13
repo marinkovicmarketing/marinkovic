@@ -38,7 +38,7 @@ Required environment variables live in `.env` (see `.env` for the current placeh
 **Data flow:** `scripts/generate-tips.ts` is the only thing that writes tip data. It fetches
 today's fixtures (`src/lib/football.ts`, API-Football, mock fallback when no key is set), asks
 Claude for structured tip candidates (`src/lib/generateTips.ts`, `output_config.format` json_schema
-on `claude-opus-4-8`), saves them as `Tip` rows keyed by `slateDate` (`YYYY-MM-DD`, Europe/Belgrade).
+on `claude-opus-4-8`), saves them as `Tip` rows keyed by `slateDate` (`YYYY-MM-DD`, Europe/Vienna).
 Sorted by confidence: tip #0 is marked `isSpecial` (the VIP-exclusive "Specijal" pick), #1-3 are
 marked `isFree`, the rest exist only to fill out tickets. All tips (regardless of flags) are then
 greedily combined into `Ticket` rows per kvota tier (`src/lib/tickets.ts` — `TIERS` defines the
@@ -52,7 +52,7 @@ target odds ranges). Re-running the script for the same day wipes and regenerate
   Prisma data as Markdown (`src/lib/telegramFormat.ts`).
 
 **VIP gating (pre-payment stopgap):** `src/app/vip/actions.ts` is a Server Action that checks a
-submitted code against `VIP_ACCESS_CODE` and sets an httpOnly cookie; the bot's `/vipkod` command
+submitted code against `VIP_ACCESS_CODE` and sets an httpOnly cookie; the bot's `/vipcode` command
 does the equivalent by flipping `TelegramSubscriber.isVip` in the DB. When real payments are added,
 this whole mechanism should be replaced, not extended.
 
@@ -66,7 +66,11 @@ this alias — verified working, don't add a separate module resolution config f
 
 ## Conventions
 
-- UI copy and Telegram messages are in Serbian; code, comments, and identifiers are in English.
+- UI copy and Telegram messages are in German (the operator is based in Austria); the AI system
+  prompt in `src/lib/generateTips.ts` instructs Claude to generate `market`/`pick`/`reasoning` in
+  German too. Console/log output in `scripts/` (operator-facing, not shown to end users) and
+  `README.md` stay in Serbian, matching the site owner's language. Code, comments, and identifiers
+  are in English.
 - Money/odds are never treated as guaranteed — copy consistently frames tips as AI estimates, not
   promises, and the footer/bot carry a responsible-gambling (18+) disclaimer. Keep that framing in
   any new user-facing text.

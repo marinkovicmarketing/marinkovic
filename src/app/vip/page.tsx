@@ -13,15 +13,15 @@ export default async function VipPage() {
   if (!unlocked) {
     return (
       <div className="mx-auto max-w-lg text-center">
-        <h1 className="text-3xl font-extrabold">VIP tipovi</h1>
+        <h1 className="text-3xl font-extrabold">VIP-Tipps</h1>
         <p className="mt-3 text-neutral-400">
-          Pažljivo sastavljeni tiketi po ciljanim kvotama — <strong>kvota 3</strong>,{" "}
-          <strong>kvota 7</strong>, <strong>kvota 15</strong> i <strong>kvota 20-30</strong> —
-          kombinovani od najsigurnijih AI tipova dana.
+          Sorgfältig zusammengestellte Scheine mit gezielten Quoten — <strong>Quote 3</strong>,{" "}
+          <strong>Quote 7</strong>, <strong>Quote 15</strong> und <strong>Quote 20-30</strong> —
+          kombiniert aus den sichersten KI-Tipps des Tages.
         </p>
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {["Kvota 3", "Kvota 7", "Kvota 15", "Kvota 20-30"].map((label) => (
+          {["Quote 3", "Quote 7", "Quote 15", "Quote 20-30"].map((label) => (
             <div
               key={label}
               className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 blur-[3px] select-none"
@@ -35,7 +35,8 @@ export default async function VipPage() {
         <UnlockForm />
 
         <p className="mt-6 text-sm text-neutral-500">
-          Nemaš VIP kod? Javi nam se na Telegram da dogovorimo pristup — plaćanje na sajtu stiže uskoro.
+          Kein VIP-Code? Melde dich bei uns auf Telegram, um den Zugang zu vereinbaren — die Zahlung auf der
+          Website kommt bald.
         </p>
       </div>
     );
@@ -46,11 +47,11 @@ export default async function VipPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-extrabold">VIP tipovi za danas</h1>
+      <h1 className="text-3xl font-extrabold">Heutige VIP-Tipps</h1>
 
       {specialTip && (
         <section className="rounded-xl border border-amber-500/50 bg-gradient-to-br from-amber-500/10 to-neutral-900 p-5">
-          <p className="text-sm font-bold text-amber-400">🌟 Specijal tip dana</p>
+          <p className="text-sm font-bold text-amber-400">🌟 Spezial-Tipp des Tages</p>
           <p className="mt-2 text-lg font-semibold">
             {specialTip.match.homeTeam} — {specialTip.match.awayTeam}{" "}
             <span className="text-neutral-500 text-sm">({specialTip.match.league})</span>
@@ -61,18 +62,18 @@ export default async function VipPage() {
               <p className="font-bold text-amber-400">{specialTip.pick}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-neutral-400">Kvota</p>
+              <p className="text-xs text-neutral-400">Quote</p>
               <p className="font-bold">{specialTip.odds.toFixed(2)}</p>
             </div>
           </div>
           <p className="mt-2 text-sm text-neutral-300">{specialTip.reasoning}</p>
-          <p className="mt-2 text-xs text-neutral-500">Pouzdanost AI procene: {specialTip.confidence}%</p>
+          <p className="mt-2 text-xs text-neutral-500">KI-Vertrauen: {specialTip.confidence}%</p>
         </section>
       )}
 
       {tickets.length === 0 && (
         <p className="rounded-xl border border-neutral-800 bg-neutral-900 p-6 text-center text-neutral-400">
-          VIP tiketi za danas još nisu generisani. Vrati se malo kasnije.
+          Die heutigen VIP-Scheine wurden noch nicht erstellt. Schau später noch einmal vorbei.
         </p>
       )}
       {TIER_ORDER.map((tier) => {
@@ -83,7 +84,7 @@ export default async function VipPage() {
             <div className="flex items-baseline justify-between">
               <h2 className="text-lg font-bold text-emerald-400">{tierLabel(tier)}</h2>
               <p className="text-sm text-neutral-400">
-                Ukupna kvota: <span className="font-bold text-neutral-100">{ticket.totalOdds.toFixed(2)}</span>
+                Gesamtquote: <span className="font-bold text-neutral-100">{ticket.totalOdds.toFixed(2)}</span>
               </p>
             </div>
             <ul className="mt-3 divide-y divide-neutral-800">

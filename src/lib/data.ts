@@ -25,10 +25,10 @@ export async function getVipTickets(slateDate = todaySlateDate()) {
 }
 
 const TIER_LABELS: Record<string, string> = {
-  KVOTA_3: "Kvota 3",
-  KVOTA_7: "Kvota 7",
-  KVOTA_15: "Kvota 15",
-  KVOTA_20_30: "Kvota 20-30",
+  KVOTA_3: "Quote 3",
+  KVOTA_7: "Quote 7",
+  KVOTA_15: "Quote 15",
+  KVOTA_20_30: "Quote 20-30",
 };
 
 export function tierLabel(tier: string) {

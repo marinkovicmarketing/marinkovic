@@ -11,16 +11,17 @@ export default async function Home() {
     <div className="space-y-10">
       <section className="text-center">
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Svaki dan <span className="text-emerald-400">3 besplatna</span> AI fudbalska tipa
+          Jeden Tag <span className="text-emerald-400">3 kostenlose</span> KI-Fußballtipps
         </h1>
         <p className="mt-3 text-neutral-400">
-          Analiza forme timova i statistike, svaki dan sveža. Za sigurnije tikete i veće kvote pogledaj VIP ponudu.
+          Frische Analyse von Teamform und Statistiken, jeden Tag neu. Für sicherere Scheine und höhere Quoten
+          schau dir das VIP-Angebot an.
         </p>
         <Link
           href="/vip"
           className="mt-5 inline-block rounded-full bg-emerald-500 px-6 py-3 font-semibold text-neutral-950 hover:bg-emerald-400"
         >
-          Vidi VIP tipove (kvota 3 / 7 / 15 / 20-30)
+          VIP-Tipps ansehen (Quote 3 / 7 / 15 / 20-30)
         </Link>
       </section>
 
@@ -31,7 +32,7 @@ export default async function Home() {
             className="block rounded-xl border border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-neutral-900 p-5 transition hover:border-amber-500/70"
           >
             <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-amber-400">🌟 Specijal tip dana</p>
+              <p className="text-sm font-bold text-amber-400">🌟 Spezial-Tipp des Tages</p>
               <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-neutral-950">
                 VIP
               </span>
@@ -40,16 +41,16 @@ export default async function Home() {
               {specialTip.match.homeTeam} — {specialTip.match.awayTeam}: {specialTip.market} @{" "}
               {specialTip.odds.toFixed(2)}
             </p>
-            <p className="mt-2 text-sm text-amber-300">Otključaj sa VIP pristupom →</p>
+            <p className="mt-2 text-sm text-amber-300">Mit VIP-Zugang freischalten →</p>
           </Link>
         </section>
       )}
 
       <section>
-        <h2 className="mb-4 text-xl font-bold">Današnji besplatni tipovi</h2>
+        <h2 className="mb-4 text-xl font-bold">Heutige kostenlose Tipps</h2>
         {freeTips.length === 0 ? (
           <p className="rounded-xl border border-neutral-800 bg-neutral-900 p-6 text-center text-neutral-400">
-            Tipovi za danas još nisu generisani. Vrati se malo kasnije.
+            Die heutigen Tipps wurden noch nicht erstellt. Schau später noch einmal vorbei.
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-3">

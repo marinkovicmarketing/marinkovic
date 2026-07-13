@@ -24,11 +24,11 @@ const TIP_SCHEMA = {
           },
           market: {
             type: "string",
-            description: "e.g. '1X2', 'Ukupno golova 2.5', 'Oba tima daju gol', 'Duploj sansa'",
+            description: "e.g. '1X2', 'Über/Unter 2.5 Tore', 'Beide Teams treffen', 'Doppelte Chance'",
           },
           pick: {
             type: "string",
-            description: "e.g. '1', 'Over 2.5', 'GG', '1X'",
+            description: "e.g. '1', 'Über 2.5', 'BTT Ja', '1X'",
           },
           estimatedOdds: {
             type: "number",
@@ -40,7 +40,7 @@ const TIP_SCHEMA = {
           },
           reasoning: {
             type: "string",
-            description: "1-2 concise sentences in Serbian explaining the pick",
+            description: "1-2 concise sentences in German explaining the pick",
           },
         },
         required: ["fixtureIndex", "market", "pick", "estimatedOdds", "confidence", "reasoning"],
@@ -53,7 +53,7 @@ const TIP_SCHEMA = {
 } as const;
 
 function formatForm(form: TeamForm): string {
-  return `${form.teamName}: poslednjih 5 (${form.lastResults}), postignuto ${form.goalsFor}, primljeno ${form.goalsAgainst}`;
+  return `${form.teamName}: letzte 5 Spiele (${form.lastResults}), erzielte Tore ${form.goalsFor}, Gegentore ${form.goalsAgainst}`;
 }
 
 /**
@@ -95,22 +95,25 @@ export async function generateTipsForFixtures(fixtures: Fixture[]): Promise<Gene
       format: { type: "json_schema", schema: TIP_SCHEMA },
     },
     system:
-      "Ti si iskusan analitičar fudbalskih kladionica koji priprema dnevne tipove za sajt i Telegram kanal. " +
-      "Za svaki meč predloži 1-2 najsigurnija tipa iz različitih tržišta (1X2, dupla šansa, ukupno golova, oba tima daju gol). " +
-      "Zasnuj procenu na formi timova koja ti je data, poznavanju liga i timova, i realnoj proceni kvota kakve bi ponudila kladionica. " +
-      "Budi konzervativan sa pouzdanošću (confidence) — koristi visoke vrednosti (80+) samo za zaista sigurne tipove. " +
-      "Nikad ne izmišljaj da je tip 'garantovan' ili '100% siguran' — kladenje uvek nosi rizik. Piši na srpskom jeziku.",
+      "Du bist ein erfahrener Fußballwetten-Analyst, der tägliche Tipps für eine Website und einen " +
+      "Telegram-Kanal vorbereitet. Schlage für jedes Spiel 1-2 möglichst sichere Tipps aus " +
+      "unterschiedlichen Märkten vor (1X2, Doppelte Chance, Über/Unter Tore, Beide Teams treffen). " +
+      "Stütze deine Einschätzung auf die angegebene Team-Form, dein Wissen über Ligen und Teams, und eine " +
+      "realistische Einschätzung der Quote, die ein Wettanbieter anbieten würde. " +
+      "Sei konservativ bei der Einschätzung der confidence — nutze hohe Werte (80+) nur für wirklich sichere Tipps. " +
+      "Behaupte niemals, ein Tipp sei 'garantiert' oder '100% sicher' — Wetten sind immer mit Risiko verbunden. " +
+      "Schreibe auf Deutsch.",
     messages: [
       {
         role: "user",
-        content: `Evo današnjih mečeva sa formom timova:\n\n${fixturesBlock}\n\nPredloži tipove za ove mečeve.`,
+        content: `Hier sind die heutigen Spiele mit der Team-Form:\n\n${fixturesBlock}\n\nSchlage Tipps für diese Spiele vor.`,
       },
     ],
   });
 
   const textBlock = response.content.find((b) => b.type === "text");
   if (!textBlock || textBlock.type !== "text") {
-    throw new Error("Claude nije vratio tekstualni odgovor sa tipovima.");
+    throw new Error("Claude hat keine Textantwort mit Tipps zurückgegeben.");
   }
 
   const parsed = JSON.parse(textBlock.text) as { tips: GeneratedTip[] };

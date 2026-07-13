@@ -10,10 +10,10 @@ export async function unlockVip(formData: FormData): Promise<{ error?: string }>
   const expected = process.env.VIP_ACCESS_CODE?.trim();
 
   if (!expected) {
-    return { error: "VIP pristup trenutno nije podešen. Pokušaj ponovo kasnije." };
+    return { error: "Der VIP-Zugang ist derzeit nicht konfiguriert. Versuch es später erneut." };
   }
   if (code !== expected) {
-    return { error: "Pogrešan kod. Proveri kod koji si dobio/la ili nas kontaktiraj." };
+    return { error: "Falscher Code. Überprüfe den Code, den du erhalten hast, oder kontaktiere uns." };
   }
 
   const store = await cookies();

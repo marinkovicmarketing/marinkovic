@@ -16,7 +16,7 @@ export function UnlockForm() {
       <input
         type="text"
         name="code"
-        placeholder="Unesi VIP kod"
+        placeholder="VIP-Code eingeben"
         required
         className="flex-1 rounded-lg border border-neutral-700 bg-neutral-800 px-4 py-3 text-sm outline-none focus:border-emerald-500"
       />
@@ -25,7 +25,7 @@ export function UnlockForm() {
         disabled={pending}
         className="rounded-lg bg-emerald-500 px-5 py-3 font-semibold text-neutral-950 hover:bg-emerald-400 disabled:opacity-60"
       >
-        {pending ? "Proveravam..." : "Otključaj"}
+        {pending ? "Prüfe..." : "Freischalten"}
       </button>
       {state.error && (
         <p className="basis-full text-sm text-red-400" role="alert">

@@ -6,7 +6,7 @@ import { formatFreeTips, formatVipTickets } from "@/lib/telegramFormat";
 
 const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
 if (!token) {
-  console.error("TELEGRAM_BOT_TOKEN nije podešen u .env. Prekidam.");
+  console.error("TELEGRAM_BOT_TOKEN ist nicht in .env gesetzt. Breche ab.");
   process.exit(1);
 }
 
@@ -20,14 +20,14 @@ bot.command("start", async (ctx) => {
     update: { username: ctx.from?.username },
   });
   await ctx.reply(
-    "Zdravo! 👋 Ja sam AI bot za fudbalske tipove.\n\n" +
-      "/tipovi — 3 besplatna tipa za danas\n" +
-      "/vip — VIP tiketi (kvota 3 / 7 / 15 / 20-30)\n" +
-      "/vipkod <kod> — otključaj VIP pristup unosom koda",
+    "Hallo! 👋 Ich bin dein KI-Bot für Fußballtipps.\n\n" +
+      "/tipps — 3 kostenlose Tipps für heute\n" +
+      "/vip — VIP-Scheine (Quote 3 / 7 / 15 / 20-30)\n" +
+      "/vipcode <code> — VIP-Zugang mit Code freischalten",
   );
 });
 
-bot.command("tipovi", async (ctx) => {
+bot.command("tipps", async (ctx) => {
   const [tips, specialTip] = await Promise.all([getFreeTips(), getSpecialTip()]);
   await ctx.reply(formatFreeTips(tips, Boolean(specialTip)), { parse_mode: "Markdown" });
 });
@@ -38,9 +38,9 @@ bot.command("vip", async (ctx) => {
 
   if (!subscriber?.isVip) {
     await ctx.reply(
-      "🔒 VIP tipovi su dostupni uz kod.\n\n" +
-        "Otključaj sa: `/vipkod TVOJ_KOD`\n" +
-        "Nemaš kod? Javi nam se da dogovorimo pristup.",
+      "🔒 VIP-Tipps sind nur mit Code verfügbar.\n\n" +
+        "Freischalten mit: `/vipcode DEIN_CODE`\n" +
+        "Kein Code? Melde dich bei uns, um den Zugang zu vereinbaren.",
       { parse_mode: "Markdown" },
     );
     return;
@@ -50,17 +50,17 @@ bot.command("vip", async (ctx) => {
   await ctx.reply(formatVipTickets(tickets, specialTip), { parse_mode: "Markdown" });
 });
 
-bot.command("vipkod", async (ctx) => {
+bot.command("vipcode", async (ctx) => {
   const code = ctx.match?.toString().trim();
   const expected = process.env.VIP_ACCESS_CODE?.trim();
   const chatId = String(ctx.chat.id);
 
   if (!code) {
-    await ctx.reply("Upotreba: `/vipkod TVOJ_KOD`", { parse_mode: "Markdown" });
+    await ctx.reply("Verwendung: `/vipcode DEIN_CODE`", { parse_mode: "Markdown" });
     return;
   }
   if (!expected || code !== expected) {
-    await ctx.reply("❌ Pogrešan kod.");
+    await ctx.reply("❌ Falscher Code.");
     return;
   }
 
@@ -69,12 +69,12 @@ bot.command("vipkod", async (ctx) => {
     create: { chatId, username: ctx.from?.username, isVip: true },
     update: { isVip: true },
   });
-  await ctx.reply("✅ VIP pristup otključan! Kucaj /vip da vidiš današnje tikete.");
+  await ctx.reply("✅ VIP-Zugang freigeschaltet! Tippe /vip, um die heutigen Scheine zu sehen.");
 });
 
 bot.catch((err) => {
-  console.error("Bot greška:", err);
+  console.error("Bot-Fehler:", err);
 });
 
-console.log("Telegram bot pokrenut (long polling)...");
+console.log("Telegram-Bot gestartet (Long Polling)...");
 bot.start();
