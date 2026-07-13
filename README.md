@@ -36,7 +36,23 @@ Napomena: sadržaj koji vidi korisnik (sajt + bot poruke) je na nemačkom (targe
 
 ## Generisanje tipova
 
-`npm run generate:tips` treba pokretati jednom dnevno (npr. cron job ili scheduled task) — povlači današnje mečeve, traži od Claude-a predloge tipova, i pravi VIP tikete po kvotama. Bez `API_FOOTBALL_KEY` koristi mock mečeve, korisno za lokalni razvoj.
+Pipeline (povlači mečeve, pita Claude-a za tipove, pravi VIP tikete) živi u `src/lib/runGeneration.ts` i pokreće se na dva načina — koristi onaj koji odgovara tvom hostingu:
+
+**Vercel** — već je podešeno. `vercel.json` ima cron koji svaki dan u 6:00 UTC pozove `/api/cron/generate-tips`. Vercel automatski šalje `Authorization: Bearer $CRON_SECRET`, pa samo treba da podesiš `CRON_SECRET` u Vercel environment varijablama (isto kao i ostale `.env` vrednosti). Promeni satnicu u `vercel.json` ako ti 6:00 UTC (8:00 po bečkom letnjem vremenu) ne odgovara.
+
+**VPS / sopstveni server** — dodaj u crontab:
+
+```bash
+0 6 * * * cd /putanja/do/projekta && npm run generate:tips >> /var/log/tipovi-generate.log 2>&1
+```
+
+ili, ako je sajt već pokrenut kao web server, isti endpoint možeš da pozoveš i preko curl-a umesto CLI skripte:
+
+```bash
+0 6 * * * curl -s "https://tvoj-sajt.at/api/cron/generate-tips?secret=$CRON_SECRET" >> /var/log/tipovi-generate.log 2>&1
+```
+
+Bez `API_FOOTBALL_KEY` koristi mock mečeve, korisno za lokalni razvoj. Skripta/endpoint su idempotentni — ako se pozovu dva puta istog dana, drugi put samo pregaze podatke od prvog.
 
 ## Stanje projekta
 
@@ -44,7 +60,7 @@ Napomena: sadržaj koji vidi korisnik (sajt + bot poruke) je na nemačkom (targe
 - ✅ AI generisanje tipova (Claude API)
 - ✅ VIP pristup preko deljenog koda (privremeno rešenje)
 - ✅ Ručna naplata preko PayPal-a (uputstvo na sajtu + botu, ti ručno šalješ kod)
+- ✅ Automatsko dnevno generisanje tipova (Vercel Cron ili crontab, vidi gore)
 - ⬜ Automatska naplata (Stripe i sl. — čeka se prijava firme u Austriji)
-- ⬜ Automatsko dnevno pokretanje `generate:tips` (nije podešeno — treba cron/scheduler)
 
 Detaljnija arhitektura: [`CLAUDE.md`](./CLAUDE.md).

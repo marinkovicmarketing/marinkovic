@@ -36,18 +36,22 @@ Required environment variables live in `.env` (see `.env` for the current placeh
 - `VIP_PRICE`, `VIP_PAYPAL_LINK`, `VIP_CONTACT_TELEGRAM` — displayed on the locked `/vip` page and
   in the bot's `/vip` reply as manual payment instructions; all optional (payment block/line is
   omitted where blank, see `src/lib/payment.ts`)
+- `CRON_SECRET` — authorizes `GET /api/cron/generate-tips` (see below); optional locally, required
+  in production or the endpoint is unauthenticated
 
 ## Architecture
 
-**Data flow:** `scripts/generate-tips.ts` is the only thing that writes tip data. It fetches
-today's fixtures (`src/lib/football.ts`, API-Football, mock fallback when no key is set), asks
-Claude for structured tip candidates (`src/lib/generateTips.ts`, `output_config.format` json_schema
-on `claude-opus-4-8`), saves them as `Tip` rows keyed by `slateDate` (`YYYY-MM-DD`, Europe/Vienna).
+**Data flow:** `src/lib/runGeneration.ts` (`generateDailySlate()`) is the only thing that writes tip
+data, called from two entry points — `scripts/generate-tips.ts` (CLI, disconnects Prisma when done)
+and `GET /api/cron/generate-tips` (HTTP, for schedulers; auth via `CRON_SECRET` as a Bearer header
+or `?secret=` query param — see README for the Vercel Cron / VPS crontab setup). It fetches today's
+fixtures (`src/lib/football.ts`, API-Football, mock fallback when no key is set), asks Claude for
+structured tip candidates (`src/lib/generateTips.ts`, `output_config.format` json_schema on
+`claude-opus-4-8`), saves them as `Tip` rows keyed by `slateDate` (`YYYY-MM-DD`, Europe/Vienna).
 Sorted by confidence: tip #0 is marked `isSpecial` (the VIP-exclusive "Specijal" pick), #1-3 are
 marked `isFree`, the rest exist only to fill out tickets. All tips (regardless of flags) are then
 greedily combined into `Ticket` rows per kvota tier (`src/lib/tickets.ts` — `TIERS` defines the
-target odds ranges). Re-running the script for the same day wipes and regenerates that day's data
-(idempotent).
+target odds ranges). Re-running for the same day wipes and regenerates that day's data (idempotent).
 
 **Two read surfaces share one data layer** (`src/lib/data.ts`: `getFreeTips`, `getSpecialTip`, `getVipTickets`):
 - Web (`src/app/page.tsx`, `src/app/vip/page.tsx`) — Next.js App Router, Server Components, Prisma
